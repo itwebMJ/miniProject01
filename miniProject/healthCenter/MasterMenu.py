@@ -32,4 +32,4 @@ class MasterMenu:
 def main():
     m = MasterMenu()
     m.teacher_prog_menu()
-main()
+#main()

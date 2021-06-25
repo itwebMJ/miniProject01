@@ -1,8 +1,10 @@
 import ProgramModel as pro
+import MasterMenu as masterMenu
 #import member.MemModel as mem
-class MasterMenu:
+class UserMenu:
     def __init__(self):
-        self.progService = pro.ProgramService()
+        self.proService = pro.ProgramService()
+        self.m_Menu = masterMenu.MasterMenu()
 
     def user_prog_menu(self):
 
@@ -11,7 +13,8 @@ class MasterMenu:
             if p == '1':
                 self.proService.getAll()
             elif p == '2':
-                self.prog_search_menu()  # 프로그램 검색 방법 메뉴
+                #self.proService.prog_search_menu()  # 프로그램 검색 방법 메뉴
+                self.m_Menu.prog_search_menu()  # 프로그램 검색 방법 메뉴
             elif p == '3':
                 self.proService.user_apply_program()
             elif p == '4':
@@ -19,3 +22,7 @@ class MasterMenu:
 
             elif p == '5':
                 break
+def main():
+    m = UserMenu()
+    m.user_prog_menu()
+#main()

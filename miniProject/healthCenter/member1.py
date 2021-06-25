@@ -71,6 +71,14 @@ class Memdao:
         cur.execute(sql, vals)
         self.conn.commit()
 
+    def pg_id_set_null_update(self,id):  #수강 취소시 필요한 메서드
+        self.connect()
+        cur = self.conn.cursor()
+        sql = "update member set pg_id =null  where mem_user_id = %s"
+        vals = (id,)
+        cur.execute(sql, vals)
+        self.conn.commit()
+
     def select(self, id):
         self.connect()
         cur = self.conn.cursor()
@@ -330,7 +338,13 @@ class MemService:
         else:
             print('비밀번호가 일치하지 않습니다')
             return
-
+#member1.py > MemService > 함수 추가[ ##프로그램 추가시 강사번호, 이름 가져옴
+    def getLoginInfo(self):
+        mem_user_id= MemService.login_user_id
+        if mem_user_id != None:
+            vo = self.dao.select(mem_user_id)
+            return vo
+#]
 class Master:
     login_user_id = None
     login_pwd = None
