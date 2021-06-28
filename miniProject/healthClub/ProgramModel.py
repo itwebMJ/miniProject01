@@ -1,6 +1,6 @@
 import pymysql
-import miniProject.healthCenter.member1 as mem
-#import datetime as date
+import datetime as date
+import miniProject.healthClub.MemberModel as mem
 
 class ProgramVo:
     def __init__(self, pg_id=None, pg_name=None, pg_desc=None, pg_max=None,
@@ -159,8 +159,8 @@ class ProgramDao:  # db작업 구현
             print(e)
         finally:
             self.disconnect()
-
     '''
+
     def editAllProByPg_id(self, vo):  # 프로그램 번호를 선택해서 전부 수정
         self.connect()
         cur = self.conn.cursor()
@@ -240,7 +240,7 @@ class ProgramService:
 
             login_user_id = mem.MemService.login_user_id    #작성자 : 로그인 번호
 
-            memVo = self.memDao.select(login_user_id)      #본인 정보 가져오는 메서드드            #강사 로그인 아이디로 본인 강사번호, 이름 자동insert
+            memVo = self.memDao.mem_select(login_user_id)      #본인 정보 가져오는 메서드드            #강사 로그인 아이디로 본인 강사번호, 이름 자동insert
             member_mem_id = memVo.mem_id
             pg_teacher_name = memVo.name
 
@@ -303,7 +303,7 @@ class ProgramService:
 
             login_user_id = mem.MemService.login_user_id  # 작성자 : 로그인 번호
 
-            memVo = self.memDao.select(login_user_id)  # 본인 정보 가져오는 메서드드     #강사 로그인 아이디로 본인 강사번호, 이름 자동insert
+            memVo = self.memDao.mem_select(login_user_id)  # 본인 정보 가져오는 메서드드     #강사 로그인 아이디로 본인 강사번호, 이름 자동insert
             member_mem_id = memVo.mem_id    #로그인 번호
 
             if pg_id == 999:
@@ -333,7 +333,7 @@ class ProgramService:
         print('내가 신청한 프로그램 취소')
         pg_user_cnt = -1
         login_user_id = mem.MemService.login_user_id  # 작성자 : 로그인 번호
-        memVo = self.memDao.select(login_user_id)  # 본인 정보 가져오는 메서드
+        memVo = self.memDao.mem_select(login_user_id)  # 본인 정보 가져오는 메서드
 
         vo_list = self.programDao.selectByPg_id(memVo.pg_id)    #내가 신청한 프로그램
         self.printVo(vo_list)
@@ -386,7 +386,7 @@ class ProgramService:
                     if pg_max == 0:
                         print('최대인원은 0명 일 수 없습니다.')
                     if vo.pg_user_cnt > pg_min or vo.pg_user_cnt > pg_max:
-                        print('현제 수강중인 인원(',vo.pg_user_cnt,')보다 큰숫자 입력')
+                        print('현제 수강중인 인원(', vo.pg_user_cnt, ')보다 큰숫자 입력')
                         return
                     if pg_min > pg_max:
                         print('최소인원 보다 큰 숫자 입력')
@@ -404,12 +404,12 @@ class ProgramService:
                         print(e)
 
                     login_user_id = mem.MemService.login_user_id  # 작성자 : 로그인 번호
-                    memVo = self.memDao.select(login_user_id)  # 본인 정보 가져오는 메서드드     #강사 로그인 아이디로 본인 강사번호, 이름 자동insert
+                    memVo = self.memDao.mem_select(login_user_id)  # 본인 정보 가져오는 메서드드     #강사 로그인 아이디로 본인 강사번호, 이름 자동insert
                     member_mem_id = memVo.mem_id
                     pg_teacher_name = memVo.name
                     result = self.programDao.editAllProByPg_id(ProgramVo(pg_id=pg_id, pg_name=pg_name, pg_desc=pg_desc,
-                                                                         pg_max=pg_max, pg_min=pg_min, pg_st_date=pg_st_date, pg_en_date=pg_en_date,
-                                                                         member_mem_id=member_mem_id, pg_teacher_name=pg_teacher_name))
+                                                    pg_max=pg_max, pg_min=pg_min, pg_st_date=pg_st_date, pg_en_date=pg_en_date,
+                                                    member_mem_id=member_mem_id, pg_teacher_name=pg_teacher_name))
 
                     if result > 0:
                         print('프로그램 수정 완료')
@@ -439,3 +439,57 @@ class ProgramService:
                     print(e)
 
 
+# import ProgramModel as pro
+
+class MasterMenu:
+    def __init__(self):
+        self.proService = ProgramService()
+
+    def teacher_prog_menu(self):
+
+        while True:
+            p = input('1.프로그램 목록 2.프로그램 추가 3. 프로그램 수정 4.삭제 5.종료')
+            if p == '1':
+                self.proService.getAll()
+            elif p == '2':
+                self.proService.addPro()
+            elif p == '3':
+                self.proService.editPro()
+            elif p == '4':
+                self.proService.delPro()
+            elif p == '5':
+                break
+
+    def prog_search_menu(self):  # 프로그램 검색 방법 메뉴
+        while True:
+            p = input('검색할 방법 1.번호 2.프로그램 이름 3. 강사이름 4.종료')
+            if p == '1':
+                self.proService.getByPg_id()
+            elif p == '2':
+                self.proService.getByPg_name()
+            elif p == '3':
+                self.proService.getByPg_teacher_name()
+            elif p == '4':
+                return
+
+class UserMenu:
+    def __init__(self):
+        self.proService = ProgramService()
+        self.m_Menu = MasterMenu()
+
+    def user_prog_menu(self):
+
+        while True:
+            p = input('1.프로그램 목록 2. 프로그램 검색 3. 프로그램 신청 4. 프로그램 신청 취소 5.종료')
+            if p == '1':
+                self.proService.getAll()
+            elif p == '2':
+                #self.proService.prog_search_menu()  # 프로그램 검색 방법 메뉴
+                self.m_Menu.prog_search_menu()  # 프로그램 검색 방법 메뉴
+            elif p == '3':
+                self.proService.user_apply_program()
+            elif p == '4':
+                self.proService.user_cancle_program()
+
+            elif p == '5':
+                break
