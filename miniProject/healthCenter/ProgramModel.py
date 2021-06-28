@@ -1,6 +1,6 @@
 import pymysql
-import datetime as date
 import miniProject.healthCenter.member1 as mem
+#import datetime as date
 
 class ProgramVo:
     def __init__(self, pg_id=None, pg_name=None, pg_desc=None, pg_max=None,
@@ -376,15 +376,17 @@ class ProgramService:
                     print('없는 프로그램')
                 else:
                     pg_name = input('새 프로그램 명 : ')
-                    vo = self.programDao.checkPg_name(pg_name)
-                    if vo != None:
+                    vo_check = self.programDao.checkPg_name(pg_name)
+                    if vo_check != None:
                         print('프로그램 이름 중복 불가')
                         return
                     pg_desc = input('새 프로그램 내용 : ')
                     pg_min = int(input('최소 수강 인원 : '))
                     pg_max = int(input('최대 수강 인원 : '))
+                    if pg_max == 0:
+                        print('최대인원은 0명 일 수 없습니다.')
                     if vo.pg_user_cnt > pg_min or vo.pg_user_cnt > pg_max:
-                        print('현제 수강중인 인원보다 큰숫자 입력')
+                        print('현제 수강중인 인원(',vo.pg_user_cnt,')보다 큰숫자 입력')
                         return
                     if pg_min > pg_max:
                         print('최소인원 보다 큰 숫자 입력')
@@ -406,8 +408,8 @@ class ProgramService:
                     member_mem_id = memVo.mem_id
                     pg_teacher_name = memVo.name
                     result = self.programDao.editAllProByPg_id(ProgramVo(pg_id=pg_id, pg_name=pg_name, pg_desc=pg_desc,
-                                                    pg_max=pg_max, pg_min=pg_min, pg_st_date=pg_st_date, pg_en_date=pg_en_date,
-                                                    member_mem_id=member_mem_id, pg_teacher_name=pg_teacher_name))
+                                                                         pg_max=pg_max, pg_min=pg_min, pg_st_date=pg_st_date, pg_en_date=pg_en_date,
+                                                                         member_mem_id=member_mem_id, pg_teacher_name=pg_teacher_name))
 
                     if result > 0:
                         print('프로그램 수정 완료')
