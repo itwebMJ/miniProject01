@@ -386,7 +386,7 @@ class ProgramService:
                     if pg_max == 0:
                         print('최대인원은 0명 일 수 없습니다.')
                     if vo.pg_user_cnt > pg_min or vo.pg_user_cnt > pg_max:
-                        print('현제 수강중인 인원(', vo.pg_user_cnt, ')보다 큰숫자 입력')
+                        print('현제 수강중인 인원('+ str(vo.pg_user_cnt) +')보다 큰숫자 입력')
                         return
                     if pg_min > pg_max:
                         print('최소인원 보다 큰 숫자 입력')
